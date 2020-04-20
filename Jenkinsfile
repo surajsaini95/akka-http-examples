@@ -89,7 +89,7 @@ pipeline {
                 branch 'master'
             }
             agent {
-                label "ubuntu_aws"
+                label "ubuntu-gcp"
             }
             steps {
                 sh 'sbt assembly'
@@ -100,7 +100,7 @@ pipeline {
                 branch 'master'
             }
             agent {
-                label "ubuntu_aws"
+                label "ubuntu_gcp"
             }
             steps {
                 mail to: 'suraj.saini@knoldus.com',
