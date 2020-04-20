@@ -19,6 +19,8 @@ pipeline {
                 }
                 steps {
                   tool name: 'sbt', type: 'org.jvnet.hudson.plugins.SbtPluginBuilder$SbtInstallation'
+                  echo "hello sbt on ubuntu-gcpu"
+                  sh 'sbt -v'                    
                 }
               }
               stage ('installation on ubuntu-gcp') {
@@ -27,6 +29,8 @@ pipeline {
                 }
                 steps {
                   tool name: 'sbt', type: 'org.jvnet.hudson.plugins.SbtPluginBuilder$SbtInstallation'
+                  echo "hello sbt on ubuntu-gcpu"
+                  sh 'sbt -v'                  
                 }
               }
             }
