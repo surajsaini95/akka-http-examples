@@ -1,9 +1,9 @@
 pipeline {
-    agent any
+    agent none
     environment {
         CI = 'true' 
     }
-    option {
+    options {
       timeout(time: 15, unit: 'MINUTES')
     }
     tools {
@@ -14,22 +14,78 @@ pipeline {
     }
 
     stages {
-        stage('Compile') {
-          steps {
-            sh 'sbt clean compile'
-          }
+
+        stage('Parallel-Compile'){
+            when {
+                branch 'dev'
+            }
+            failFast true
+            parallel {
+                stage ('Compile in aws') {
+                    agent {
+                        label "ubuntu_aws"
+                    }
+                    steps {
+                        sh 'sbt clean compile'
+                        echo "Compiled on ubuntu_aws"
+                    }
+                }
+                stage ('Compile in gcp') {
+                    agent {
+                        label "ubuntu-gcp"
+                    }
+                    steps {
+                        sh 'sbt clean compile'
+                        echo "Compiled on ubuntu-gcp"
+                    }
+                }
+            }
         }
-        stage('Test') {
-          steps {
-            sh 'sbt test'
-          }
+        stage('Parallel-Test'){
+            when {
+                branch 'beta'
+            }
+            failFast true
+            parallel {
+                stage ('Test in aws') {
+                    agent {
+                        label "ubuntu_aws"
+                    }
+                    steps {
+                        sh 'sbt test'
+                        echo "Tested on ubuntu_aws"
+                    }
+                }
+                stage ('Test in gcp') {
+                    agent {
+                        label "ubuntu-gcp"
+                    }
+                    steps {
+                        sh 'sbt test'
+                        echo "Tested on ubuntu-gcp"
+                    }
+                }
+            }
         }
+        
         stage('Build') {
-          steps {
-            sh 'sbt assembly'
-          }
+            when {
+                branch 'master'
+            }
+            agent {
+                label "ubuntu_aws"
+            }
+            steps {
+                sh 'sbt assembly'
+            }
         }
-        stage('Deploy') {
+        stage ('deployment') {
+            when {
+                branch 'master'
+            }
+            agent {
+                label "ubuntu_aws"
+            }
             steps {
                 mail to: 'suraj.saini@knoldus.com',
                       subject: "Job '${JOB_NAME}' (${BUILD_NUMBER}) is waiting for input",
@@ -46,9 +102,11 @@ pipeline {
     post {
         always {
             mail to: 'suraj.saini@knoldus.com',
-             subject: "Pipeline: ${currentBuild.fullDisplayName} is ${currentBuild.currentResult}",
-             body: "Hey this is body of mail"
-           
+                 subject: "Pipeline: ${currentBuild.fullDisplayName} is ${currentBuild.currentResult}",
+                 body: "Hey this is body of mail"
+        }
+        success {
+            cleanWs()
         }
     }
 }
