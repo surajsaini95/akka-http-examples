@@ -8,6 +8,8 @@ version := "1.0"
 
 scalaVersion := "2.11.5"
 
+mainClass in (Compile, packageBin) := Some("com.madhukaraphatak.akkahttp.AkkaHttpHelloWorld")
+
 libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-http-experimental" % "1.0",
   "com.typesafe.akka" %% "akka-http-spray-json-experimental" % "1.0",

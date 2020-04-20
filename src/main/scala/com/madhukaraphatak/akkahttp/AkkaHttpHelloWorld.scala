@@ -25,8 +25,8 @@ object AkkaHttpHelloWorld {
           }
         }
       }
-    Http().bindAndHandle(route,"localhost",8080)
+    Http().bindAndHandle(route,"localhost",8084)
 
-    println("server started at 8080")
+    println("server started at 8084")
   }
 }
