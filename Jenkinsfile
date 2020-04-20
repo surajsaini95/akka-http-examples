@@ -19,6 +19,8 @@ pipeline {
                 }
                 steps {
                   tool name: 'sbt', type: 'org.jvnet.hudson.plugins.SbtPluginBuilder$SbtInstallation'
+                  echo "hello sbt on ubuntu-gcpu"
+                  sh 'sbt -v'                    
                 }
               }
               stage ('installation on ubuntu-gcp') {
@@ -27,6 +29,8 @@ pipeline {
                 }
                 steps {
                   tool name: 'sbt', type: 'org.jvnet.hudson.plugins.SbtPluginBuilder$SbtInstallation'
+                  echo "hello sbt on ubuntu-gcpu"
+                  sh 'sbt -v'                  
                 }
               }
             }
@@ -89,7 +93,7 @@ pipeline {
                 branch 'master'
             }
             agent {
-                label "ubuntu_aws"
+                label "ubuntu-gcp"
             }
             steps {
                 sh 'sbt assembly'
@@ -100,7 +104,7 @@ pipeline {
                 branch 'master'
             }
             agent {
-                label "ubuntu_aws"
+                label "ubuntu_gcp"
             }
             steps {
                 mail to: 'suraj.saini@knoldus.com',
@@ -126,4 +130,3 @@ pipeline {
         }
     }
 }
-
