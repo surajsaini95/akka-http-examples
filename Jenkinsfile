@@ -7,7 +7,7 @@ pipeline {
       timeout(time: 15, unit: 'MINUTES')
     }
     tools {
-        sbt 'sbt'
+        Sbt 'sbt'
     }
     triggers {
       pollSCM 'H/5 * * * *'
