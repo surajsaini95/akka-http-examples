@@ -4,17 +4,33 @@ pipeline {
         CI = 'true' 
     }
     options {
-      timeout(time: 15, unit: 'MINUTES')
-    }
-    tools {
-        sbt 'sbt'
+      timeout(time: 45, unit: 'MINUTES')
     }
     triggers {
       pollSCM 'H/5 * * * *'
     }
 
     stages {
-
+        stage ('Parallel-Installation') {
+            parallel {
+              stage ('installation on ubuntu_aws') {
+                agent {
+                  label 'ubuntu_aws'
+                }
+                steps {
+                  tool name: 'sbt', type: 'org.jvnet.hudson.plugins.SbtPluginBuilder$SbtInstallation'
+                }
+              }
+              stage ('installation on ubuntu-gcp') {
+                agent {
+                  label 'ubuntu-gcp'
+                }
+                steps {
+                  tool name: 'sbt', type: 'org.jvnet.hudson.plugins.SbtPluginBuilder$SbtInstallation'
+                }
+              }
+            }
+        }
         stage('Parallel-Compile'){
             when {
                 branch 'dev'
@@ -91,7 +107,7 @@ pipeline {
                       subject: "Job '${JOB_NAME}' (${BUILD_NUMBER}) is waiting for input",
                       body: "Please go to ${BUILD_URL} and verify the deployment"
                 input 'Proceed to Deploy'
-                timeout(time: 5, unit: 'MINUTES') {
+                timeout(time: 10, unit: 'MINUTES') {
                     retry(5) {
                         sh './deploy.sh'
                     }
@@ -110,3 +126,5 @@ pipeline {
         }
     }
 }
+
+
