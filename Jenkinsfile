@@ -94,6 +94,9 @@ pipeline {
             }
             steps {
                 sh '$SBT assembly'
+                echo "Jar file created"
+                archiveArtifacts 'target/scala-2.12/akka-http-service-assembly-0.1.jar'
+                echo "jar file archived"
             }
         }
         stage ('deployment') {
@@ -105,8 +108,9 @@ pipeline {
             }
             steps {
                 mail to: 'suraj.saini@knoldus.com',
-                      subject: "Job '${JOB_NAME}' (${BUILD_NUMBER}) is waiting for input",
+                      subject: "Job ${JOB_NAME} (${BUILD_NUMBER}) is waiting for input",
                       body: "Please go to ${BUILD_URL} and verify the deployment"
+                echo "mail sent to confirm deployment"
                 input 'Proceed to Deploy'
                 timeout(time: 10, unit: 'MINUTES') {
                     retry(5) {
