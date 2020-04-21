@@ -90,7 +90,7 @@ pipeline {
                 branch 'master'
             }
             agent {
-                label "ubuntu-gcp"
+                label "ubuntu_gcp"
             }
             steps {
                 sh '$SBT assembly'
