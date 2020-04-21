@@ -1,7 +1,8 @@
 pipeline {
     agent none
     environment {
-        CI = 'true' 
+        CI = 'true'
+        SBT='/home/knoldus/jenkins-slave/tools/org.jvnet.hudson.plugins.SbtPluginBuilder_SbtInstallation/sbt/bin/sbt' 
     }
     options {
       timeout(time: 45, unit: 'MINUTES')
@@ -12,15 +13,14 @@ pipeline {
 
     stages {
         stage ('Parallel-Installation') {
-            parallel {
-              stage ('installation on ubuntu_aws') {
+             failFast true
+             parallel {
+              stage ('installation on ubuntu_gcp') {
                 agent {
-                  label 'ubuntu_aws'
+                  label 'ubuntu_gcp'
                 }
                 steps {
-                  tool name: 'sbt', type: 'org.jvnet.hudson.plugins.SbtPluginBuilder$SbtInstallation'
-                  echo "hello sbt on ubuntu-gcpu"
-                  sh 'sbt -v'                    
+                  tool name: 'sbt', type: 'org.jvnet.hudson.plugins.SbtPluginBuilder$SbtInstallation'                
                 }
               }
               stage ('installation on ubuntu-gcp') {
@@ -28,9 +28,7 @@ pipeline {
                   label 'ubuntu-gcp'
                 }
                 steps {
-                  tool name: 'sbt', type: 'org.jvnet.hudson.plugins.SbtPluginBuilder$SbtInstallation'
-                  echo "hello sbt on ubuntu-gcpu"
-                  sh 'sbt -v'                  
+                  tool name: 'sbt', type: 'org.jvnet.hudson.plugins.SbtPluginBuilder$SbtInstallation'                  
                 }
               }
             }
@@ -41,21 +39,21 @@ pipeline {
             }
             failFast true
             parallel {
-                stage ('Compile in aws') {
+                stage ('Compile in ubuntu_gcp') {
                     agent {
-                        label "ubuntu_aws"
+                        label "ubuntu_gcp"
                     }
                     steps {
-                        sh 'sbt clean compile'
-                        echo "Compiled on ubuntu_aws"
+                        sh '$SBT clean compile'
+                        echo "Compiled on ubuntu_gcp"
                     }
                 }
-                stage ('Compile in gcp') {
+                stage ('Compile in ubuntu-gcp') {
                     agent {
                         label "ubuntu-gcp"
                     }
                     steps {
-                        sh 'sbt clean compile'
+                        sh '$SBT clean compile'
                         echo "Compiled on ubuntu-gcp"
                     }
                 }
@@ -65,23 +63,22 @@ pipeline {
             when {
                 branch 'beta'
             }
-            failFast true
             parallel {
-                stage ('Test in aws') {
+                stage ('Test in ubuntu_gcp') {
                     agent {
-                        label "ubuntu_aws"
+                        label "ubuntu_gcp"
                     }
                     steps {
-                        sh 'sbt test'
-                        echo "Tested on ubuntu_aws"
+                        sh '$SBT test'
+                        echo "Tested on ubuntu_gcp"
                     }
                 }
-                stage ('Test in gcp') {
+                stage ('Test in ubuntu-gcp') {
                     agent {
                         label "ubuntu-gcp"
                     }
                     steps {
-                        sh 'sbt test'
+                        sh '$SBT test'
                         echo "Tested on ubuntu-gcp"
                     }
                 }
@@ -96,7 +93,7 @@ pipeline {
                 label "ubuntu-gcp"
             }
             steps {
-                sh 'sbt assembly'
+                sh '$SBT assembly'
             }
         }
         stage ('deployment') {
