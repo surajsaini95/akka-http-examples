@@ -31,14 +31,17 @@
 ################################################################
 #          Beginning of Main                                   #
 
-ls
 
-JAR_LOCATION='/home/knoldus/jenkins-slave/workspace/capstone-CI-CD_master/target/scala-2.11'
+JAR_LOCATION='target/scala-2.11'
 JAR_NAME='akka-http-helloworld-assembly-1.0.jar'
 
 CURRENT_PID=$(ps aux | grep $JAR_NAME | cut -d' ' -f3 | head -n 1)
 echo "Killing currently running App with pid : $CURRENT_PID"
 kill $CURRENT_PID
+
+
+echo "Jar info"
+ls -al $JAR_LOCATION
 
 nohup java -jar $JAR_LOCATION/$JAR_NAME &
 echo "================================================"
