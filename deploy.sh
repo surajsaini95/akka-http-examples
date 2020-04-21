@@ -30,6 +30,6 @@
 ################################################################
 ################################################################
 #          Beginning of Main                                   #
-java -jar target/scala-2.11/akka-http-helloworld-assembly-1.0.jar
+nohup java -jar target/scala-2.11/akka-http-helloworld-assembly-1.0.jar &
 ################################################################
 # End of script
