@@ -96,8 +96,13 @@ pipeline {
                 sh '$SBT assembly'
                 echo "Jar file created"
 
-                archiveArtifacts 'target/scala-2.11/akka-http-helloworld-assembly-1.0.jar'
+                //archiveArtifacts 'target/scala-2.11/akka-http-helloworld-assembly-1.0.jar'
+                dir('target/scala-2.11') {
+                   step([$class: 'ArtifactArchiver', artifacts: 'akka-http-helloworld-assembly-1.0.jar'])
+                   sh 'ls -al'
+                }
                 echo "jar file archived"
+
             }
         }
         stage ('deployment') {
@@ -112,11 +117,9 @@ pipeline {
                       subject: "Job ${JOB_NAME} (${BUILD_NUMBER}) is waiting for input",
                       body: "Please go to ${BUILD_URL} and verify the deployment"
                 echo "mail sent to confirm deployment"
-                echo "checking jar file "
-                sh 'ls /target/scala-2.11/'
                 input 'Proceed to Deploy'
                 timeout(time: 10, unit: 'MINUTES') {
-                    retry(5) {
+                    retry(2) {
                         sh './deploy.sh'
                     }
                 }
@@ -128,9 +131,6 @@ pipeline {
             mail to: 'suraj.saini@knoldus.com',
                  subject: "Pipeline: ${currentBuild.fullDisplayName} is ${currentBuild.currentResult}",
                  body: "Hey this is body of mail"
-        }
-        success {
-            cleanWs()
         }
     }
 }
