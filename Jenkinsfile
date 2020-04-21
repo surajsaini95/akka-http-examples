@@ -95,7 +95,8 @@ pipeline {
             steps {
                 sh '$SBT assembly'
                 echo "Jar file created"
-                archiveArtifacts 'target/scala-2.12/akka-http-service-assembly-0.1.jar'
+                
+                archiveArtifacts 'target/scala-2.11/akka-http-helloworld-assembly-1.0.jar'
                 echo "jar file archived"
             }
         }
