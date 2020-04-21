@@ -24,7 +24,7 @@ object RestServer {
     implicit val materializer = ActorMaterializer()
 
     val server = new RestServer()
-    server.startServer("localhost",8084)
+    server.startServer("0.0.0.0",8084)
   }
 }
 
