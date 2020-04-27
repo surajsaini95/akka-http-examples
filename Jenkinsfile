@@ -123,6 +123,8 @@ pipeline {
                         sh './deploy.sh'
                     }
                 }
+                echo "Terminate pipeline"
+                input 'Proceed to Deploy'
             }
         }
     }
