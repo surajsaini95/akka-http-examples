@@ -48,5 +48,8 @@ echo "================================================"
 echo "=                  Deployed                    ="
 echo "================================================"
 
+CURRENT_PID=$(ps aux | grep $JAR_NAME | cut -d' ' -f3 | head -n 1)
+echo "Running App with pid : $CURRENT_PID"
+
 ################################################################
 # End of script
